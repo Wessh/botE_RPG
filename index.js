@@ -1,14 +1,28 @@
 //API Guide https://discordjs.guide/creating-your-bot/commands-with-user-input.html#basic-arguments
 
+//Modulo do sistema de arquivos
+const fs = require('fs');
+
 //Responsavel por interagir com o discord
 const Discord = require('discord.js');
 
 //Arquivo de configurações do server
-//const config = require('./config.json');
 const { prefix, token } = require('./config.json');
 
 //Cria um novo Bot
 const bot = new Discord.Client();
+
+//Inclui a versão extendida do modulo Maps 
+bot.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+
+	// set a new item in the Collection
+	// with the key as the command name and the value as the exported module
+	bot.commands.set(command.name, command);
+}
 
 //Faz a autenticação do bot no discord
 bot.login(token);
@@ -26,10 +40,11 @@ cMessage.addListener("data", res => {
 });
 
 bot.on('guildMemberAdd', membro=>{
-    membro.send(`Seja bem vindo! Ta se liga nas regras do servidor bip!`)
+    membro.send(`Seja bem vindo! ${msg.membro.username}`)
 });
+
 bot.on('message', msg => {
-    if (!msg.content.startsWith(prefix) || msg.author.bot) return;
+    if (msg.author.bot) return;
 
         const args = msg.content.slice(prefix.length).split(' ');
         const command = args.shift().toLowerCase();
@@ -37,11 +52,14 @@ bot.on('message', msg => {
         console.log(msg.author.username+ ": " + msg.content);
 
         if (command === 'args-info') {
-            if (!args.length) {
+            /*if (!args.length) {
                 return msg.channel.send(`Você não forneceu argumentos, ${msg.author}!`);
             }
         
-            message.channel.send(`Command name: ${command}\nArguments: ${args}`);
+            msg.channel.send(`Command name: ${command}\nArguments: ${args}`);*/
+            bot.commands.get('args-info').execute(msg, args);
+        }else if (command === 'teste'){
+            bot.commands.get('teste').execute(msg, args);
         }
         /*else if (command === 'avatar') {
             if (!msg.mentions.users.size) {
