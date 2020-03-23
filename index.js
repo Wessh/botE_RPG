@@ -35,13 +35,20 @@ bot.once('ready',()=>{console.log(`Bot online: ${bot.user.tag}!`)});
 let cMessage = process.openStdin();
 cMessage.addListener("data", res => {
     let x = res.toString().trim().split(/ +/g)
-    bot.channels.cache.get("689429879430971485").send(x.join(" "));
+    //bot.channels.cache.get("689429879430971485").send(x.join(" "));
+    bot.channels.cache.get("691076993198063668").send(x.join(" "));
     
 });
 
-bot.on('guildMemberAdd', membro=>{
-    membro.send(`Seja bem vindo! ${msg.membro.username}`)
+bot.on("guildMemberAdd", (member) => {
+
+    let channel = bot.channels.cache.get('689269745257808044');
+
+    channel.send(`Temos um novo aventureiro nas redondezas.\n ${member.user}, Bem vindo a nossa guilda!`); 
 });
+
+
+
 
 bot.on('message', msg => {
     if (msg.author.bot) return;
@@ -60,6 +67,8 @@ bot.on('message', msg => {
             bot.commands.get('args-info').execute(msg, args);
         }else if (command === 'teste'){
             bot.commands.get('teste').execute(msg, args);
+        }else if (command === 'r'){
+            bot.commands.get('r').execute(msg, args);
         }
         /*else if (command === 'avatar') {
             if (!msg.mentions.users.size) {
